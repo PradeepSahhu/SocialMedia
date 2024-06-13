@@ -5,67 +5,83 @@ pragma solidity ^0.8.10;
 
 error AlreadyInFriendList();
 
-contract SocialMedia {
+contract SocialMedia{
+
     uint32 private socialScore;
     uint256 private totalFriendsEver;
     address private immutable owner;
     uint32 private removeFriends;
-    mapping(address => bool) private isInFriendList;
+    mapping(address=>bool)private isInFriendList;
 
     address[] private friendList;
 
     event AddFriend(address indexed newFriend, uint indexed friendNumber);
     event RemoveFriend(address indexed frindAddress, uint indexed noOfFriend);
 
+
     // For Better Gas Optimization
-    modifier onlyOwner() {
+    modifier onlyOwner{
         _onlyOwner();
         _;
     }
 
-    function _onlyOwner() internal view {
-        require(msg.sender == owner, "You are not the Owner");
+    function _onlyOwner()internal view{
+        require(msg.sender == owner,"You are not the Owner");
     }
 
-    constructor() {
+
+    constructor(){
         owner = msg.sender;
     }
 
-    function showFriendList() external view returns (address[] memory) {
+
+    function showFriendList() external view returns(address[] memory, uint,uint){
+        
         uint l = friendList.length;
         uint TotalFriendsRemaining = totalFriendsEver - removeFriends;
         uint index = 0;
 
-        address[] memory friends = new address[](
-            TotalFriendsRemaining < 1 ? 0 : TotalFriendsRemaining
-        );
+        address[] memory friends = new address[](TotalFriendsRemaining < 1 ? 0 : TotalFriendsRemaining);
 
-        for (uint i = 0; i < l; i++) {
+        for(uint i = 0;i<l;i++){
             address val = friendList[i];
-            if (val != address(0)) {
+            if(val!=address(0)){
                 friends[index] = val;
                 index++;
             }
         }
-        return friends;
+        return (friends,index, TotalFriendsRemaining);
     }
 
-    function correctFriendList() external returns (address[] memory) {
+     function _correctFriendList() internal returns(address[] memory){
+        
         uint l = friendList.length;
         uint index = 0;
 
-        for (uint i = 0; i < l; i++) {
+
+        for(uint i = 0;i<l;i++){
             address val = friendList[i];
-            if (val != address(0)) {
+            if(val!=address(0)){
                 friendList[index] = val;
                 index++;
             }
         }
+
+        while(l>index){
+            friendList.pop();
+            index++;
+        }
         return friendList;
     }
 
+    function totalFriendsEverrr() external view returns(uint){
+        return totalFriendsEver;
+    }
+
+    
+
     function addFriends(address _address) external onlyOwner {
-        if (isInFriendList[_address]) {
+        if(isInFriendList[_address]){
             revert AlreadyInFriendList();
         }
         friendList.push(_address);
@@ -76,32 +92,36 @@ contract SocialMedia {
         emit AddFriend(_address, socialScore);
     }
 
-    function removeFriendsFromList(uint index) external onlyOwner {
+    function removeFriendsFromList(uint index)external onlyOwner{
         address val = friendList[index];
-        isInFriendList[val] = false;
+       isInFriendList[val] = false;
         delete friendList[index];
         removeFriends++;
         socialScore--;
         emit RemoveFriend(val, removeFriends);
+        _correctFriendList();
     }
 
-    function showAddress() external view returns (address) {
+    function showAddress() external view returns(address){
         return address(this);
-    }
+    }  
 
-    function showBalance() external view returns (uint) {
+    function showBalance() external view returns(uint){
         return address(this).balance;
     }
 
-    function showSocialScore() external view returns (uint) {
+    function showSocialScore() external view returns(uint){
         return socialScore;
     }
 
-    function noOfRemovedFriend() external view returns (uint) {
+    function noOfRemovedFriend() external view returns(uint){
         return removeFriends;
     }
 
-    function getOwner() external view returns (address) {
+    function getOwner() external view returns(address){
         return owner;
     }
+
+
+
 }

@@ -19,7 +19,7 @@ export default function Home() {
   const [showPopUp, setShowPopUp] = useState(false);
   const socialModal = useRef();
 
-  const contractAddress = "0xdbE34587178C409B253c500F5379694fA896f681";
+  const contractAddress = "0x33342701c71599f96c846b901f4692DC4EeB7a8D";
 
   const initialize = async () => {
     if (window.ethereum) {

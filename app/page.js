@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import socialABI from "../artifacts/contracts/SocialMedia.sol/SocialMedia.json";
+// import socialABI from "../artifacts/contracts/SocialMedia.sol/SocialMedia.json";
 import { ethers } from "ethers";
 import { X } from "lucide-react";
 
@@ -20,6 +20,7 @@ export default function Home() {
   const socialModal = useRef();
 
   const contractAddress = "0xc2d9D1eF113d01e5852444FF457C540FD95946AD";
+  const socialABI = process.env.abi;
 
   const initialize = async () => {
     if (window.ethereum) {
@@ -49,7 +50,7 @@ export default function Home() {
       const signer = provider.getSigner();
       const socialContract = new ethers.Contract(
         contractAddress,
-        socialABI.abi,
+        socialABI,
         signer
       );
       console.log(socialContract);
@@ -192,7 +193,7 @@ export default function Home() {
 
   useEffect(() => {
     EventListener();
-    getOwnerAddress();
+    initialize();
   }, [contractInstance]);
 
   return (
@@ -217,7 +218,10 @@ export default function Home() {
 
       <div className="text-white">
         <p className="text-2xl bg-gradient-to-br from-blue-700 to-purple-600  bg-clip-text text-transparent m-4">
-          Account is {ownerAddress}
+          Account Owner is {ownerAddress}
+        </p>
+        <p className="text-2xl bg-gradient-to-br from-blue-700 to-purple-600  bg-clip-text text-transparent m-4">
+          Your Account is {accounts}
         </p>
       </div>
 
